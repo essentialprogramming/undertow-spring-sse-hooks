@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Server-Sent Events client example with EventSource</title>
+</head>
+<body>
+<script>
+    if (window.EventSource == null) {
+        alert('The browser does not support Server-Sent Events');
+    } else {
+        var eventSource = new EventSource('/sse/hook');
+
+        eventSource.onopen = function () {
+            console.log('connection is established');
+        };
+
+        eventSource.onerror = function (error) {
+            console.log('connection state: ' + eventSource.readyState + ', error: ' + event);
+        };
+
+        eventSource.onmessage = function (event) {
+            const msg = JSON.parse(event.data);
+		    document.getElementById("hookData").innerHTML += event.data + '<br><br>';
+            console.log('data: ' + event.data);
+
+            if (event.data.endsWith('.')) {
+                eventSource.close();
+                console.log('connection is closed');
+            }
+        };
+    }
+</script>
+
+<h1>Hooks Observer</h1>
+
+<h3>Hook data</h3>
+<div id="hookData"></div>
+</body>
+</html>
